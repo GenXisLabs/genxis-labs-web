@@ -1,77 +1,73 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronRight, Brain, Code, Cloud, LineChart, Mail, MapPin, Phone, ExternalLink, Quote, Users, Zap, Award } from 'lucide-react';
+import { Menu, X, ChevronRight, Brain, Code, Cloud, LineChart, Mail, MapPin, Phone, ExternalLink, Quote, Users, Zap, Award, ArrowRight, Moon, Sun } from 'lucide-react';
 
-// --- Particle Background Component ---
-const ParticleNetwork = () => {
+// --- Tech Wave Background Component ---
+const TechWaveBackground = ({ isDark }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let animationFrameId;
-    let particles = [];
     let w = (canvas.width = canvas.offsetWidth);
     let h = (canvas.height = canvas.offsetHeight);
+    let time = 0;
 
-    // Responsive particle count
-    const getParticleCount = () => Math.floor((w * h) / 15000);
+    // Configuration for the wave lines - adjusted opacity based on theme
+    const lines = [
+      { yOffset: 0, amplitude: 50, frequency: 0.002, speed: 0.01, color: isDark ? 'rgba(0, 161, 255, 0.3)' : 'rgba(0, 161, 255, 0.15)', width: 2 },
+      { yOffset: 20, amplitude: 70, frequency: 0.0015, speed: 0.015, color: isDark ? 'rgba(0, 214, 251, 0.3)' : 'rgba(0, 214, 251, 0.15)', width: 2 },
+      { yOffset: -20, amplitude: 30, frequency: 0.003, speed: 0.008, color: isDark ? 'rgba(0, 161, 255, 0.2)' : 'rgba(0, 161, 255, 0.1)', width: 1 },
+      { yOffset: 40, amplitude: 40, frequency: 0.0025, speed: 0.02, color: isDark ? 'rgba(0, 214, 251, 0.2)' : 'rgba(0, 214, 251, 0.1)', width: 1 },
+    ];
 
-    class Particle {
-      constructor() {
-        this.x = Math.random() * w;
-        this.y = Math.random() * h;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.radius = Math.random() * 1.5 + 1;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > w) this.vx = -this.vx;
-        if (this.y < 0 || this.y > h) this.vy = -this.vy;
-      }
-
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 161, 255, 0.5)'; // Primary blue, semi-transparent
-        ctx.fill();
-      }
-    }
-
-    const init = () => {
-      particles = [];
-      const count = getParticleCount();
-      for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
-      }
-    };
+    // Subtle floating particles
+    const particles = Array.from({ length: 15 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      size: Math.random() * 2 + 0.5,
+      speedX: Math.random() * 0.2 - 0.1,
+      speedY: Math.random() * 0.2 - 0.1,
+      opacity: Math.random() * 0.4 + 0.1
+    }));
 
     const animate = () => {
       ctx.clearRect(0, 0, w, h);
+      time += 0.01;
 
-      // Draw connections first so they are behind particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 214, 251, ${0.2 - dist / 120 * 0.2})`; // Cyan, fading with distance
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
+      // Draw Wave Lines
+      lines.forEach(line => {
+        ctx.beginPath();
+        ctx.lineWidth = line.width;
+        ctx.strokeStyle = line.color;
+        
+        for (let x = 0; x <= w; x += 5) {
+          // Complex sine wave for organic "data flow" look
+          const y = (h / 2) + line.yOffset + 
+                    Math.sin(x * line.frequency + time * line.speed) * line.amplitude +
+                    Math.sin(x * line.frequency * 0.5 + time * line.speed * 0.5) * (line.amplitude * 0.5);
+          
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
         }
-      }
+        ctx.stroke();
+      });
 
+      // Draw Particles
       particles.forEach(p => {
-        p.update();
-        p.draw();
+        p.x += p.speedX;
+        p.y += p.speedY;
+        
+        // Soft wrapping
+        if (p.x < 0) p.x = w;
+        if (p.x > w) p.x = 0;
+        if (p.y < 0) p.y = h;
+        if (p.y > h) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 161, 255, ${p.opacity})`;
+        ctx.fill();
       });
 
       animationFrameId = requestAnimationFrame(animate);
@@ -80,45 +76,45 @@ const ParticleNetwork = () => {
     const handleResize = () => {
       w = canvas.width = canvas.offsetWidth;
       h = canvas.height = canvas.offsetHeight;
-      init();
     };
 
     window.addEventListener('resize', handleResize);
-    init();
     animate();
 
     return () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isDark]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 z-0 w-full h-full" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 z-0 w-full h-full pointer-events-none" />;
 };
 
-// --- Reusable Components ---
-const SectionHeading = ({ badge, title, subtitle, dark = false }) => (
-  <div className="mb-16 text-center max-w-3xl mx-auto">
+// --- Modern Reusable Components ---
+const SectionHeading = ({ badge, title, subtitle, dark = false, align = 'center' }) => (
+  <div className={`mb-20 max-w-3xl ${align === 'center' ? 'mx-auto text-center' : ''}`}>
     {badge && (
-      <span className="inline-block py-1 px-3 rounded-full bg-cyan-50 text-[#00a1ff] text-sm font-semibold tracking-wider uppercase mb-4">
+      <span className={`inline-flex items-center gap-1.5 py-1.5 px-4 rounded-full text-xs font-bold tracking-widest uppercase mb-6 ${dark ? 'bg-white/10 text-[#00d6fb] border border-white/10' : 'bg-blue-50 dark:bg-blue-900/20 text-[#00a1ff] dark:text-[#00d6fb] border border-blue-100 dark:border-blue-800'}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-[#00d6fb]' : 'bg-[#00a1ff] dark:bg-[#00d6fb]'}`}></span>
         {badge}
       </span>
     )}
-    <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${dark ? 'text-white' : 'text-gray-900'}`}>
+    <h2 className={`text-4xl md:text-5xl font-extrabold tracking-tight mb-6 leading-tight ${dark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
       {title}
     </h2>
-    <p className={`text-lg md:text-xl ${dark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+    <p className={`text-lg md:text-xl ${dark ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'} leading-relaxed font-light`}>
       {subtitle}
     </p>
   </div>
 );
 
 const Button = ({ children, variant = 'primary', className = '', ...props }) => {
-  const baseStyle = "inline-flex items-center justify-center px-8 py-4 font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:-translate-y-1";
+  const baseStyle = "inline-flex items-center justify-center px-8 py-4 font-semibold rounded-full transition-all duration-300 ease-out transform active:scale-95 text-sm tracking-wide";
   const variants = {
-    primary: "bg-gradient-to-r from-[#00a1ff] to-[#00d6fb] text-white hover:shadow-lg hover:shadow-cyan-500/30",
-    outline: "bg-transparent border-2 border-[#00a1ff] text-[#00a1ff] hover:bg-[#00a1ff] hover:text-white",
-    white: "bg-white text-gray-900 hover:shadow-lg"
+    primary: "bg-[#00a1ff] text-white hover:bg-[#008ecc] shadow-[0_4px_14px_0_rgba(0,161,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,161,255,0.23)] dark:shadow-blue-500/20",
+    outline: "bg-transparent border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-[#00a1ff] hover:text-[#00a1ff] dark:hover:border-[#00a1ff] dark:hover:text-[#00a1ff]",
+    dark: "bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-white/20",
+    white: "bg-white text-gray-900 shadow-lg hover:shadow-xl dark:bg-gray-800 dark:text-white"
   };
 
   return (
@@ -132,12 +128,17 @@ const Button = ({ children, variant = 'primary', className = '', ...props }) => 
 export default function GenXisLabsSite() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   const navLinks = [
     { name: 'About', href: '#about' },
@@ -147,41 +148,76 @@ export default function GenXisLabsSite() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-[#00d6fb] selection:text-white">
+    <div className={`${isDarkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen bg-white dark:bg-[#0B1120] text-gray-900 dark:text-white font-sans selection:bg-[#00d6fb] selection:text-white overflow-x-hidden transition-colors duration-500">
 
-      {/* --- Navigation --- */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
-        <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-          <a href="#" className="flex items-center gap-2 z-10">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#00a1ff] to-[#00d6fb] rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xl">G</span>
+        {/* --- Floating Modern Navigation --- */}
+        <div className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ${scrolled ? 'py-4' : 'py-6'}`}>
+          <nav className={`
+            flex items-center justify-between px-6 md:px-8 py-3 
+            transition-all duration-500 ease-in-out
+            ${scrolled 
+              ? 'w-[95%] md:w-[85%] bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg shadow-black/5 rounded-full' 
+              : 'w-full bg-transparent border-transparent'
+            }
+          `}>
+            <a href="#" className="flex items-center gap-2 z-10 group">
+              <div className="w-9 h-9 bg-[#00a1ff] rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                <span className="text-white font-extrabold text-lg">G</span>
+              </div>
+              <span className={`text-xl font-bold tracking-tight ${scrolled ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'}`}>
+                GenXis<span className="text-[#00a1ff]">.</span>
+              </span>
+            </a>
+
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-4">
+              <div className={`flex items-center gap-1 px-4 py-1.5 rounded-full ${scrolled ? 'bg-gray-100/50 dark:bg-gray-800/50' : 'bg-white/80 dark:bg-black/20 backdrop-blur-sm border border-white/40 dark:border-white/10'}`}>
+                {navLinks.map((link) => (
+                  <a 
+                    key={link.name} 
+                    href={link.href} 
+                    className="px-5 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-[#00a1ff] dark:hover:text-[#00a1ff] rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+                  >
+                    {link.name}
+                  </a>
+                ))}
+              </div>
             </div>
-            <span className="text-2xl font-bold tracking-tight">GenXis<span className="text-[#00a1ff]">.</span>Labs</span>
-          </a>
+            
+            <div className="hidden md:flex items-center gap-3">
+               <button 
+                  onClick={toggleTheme}
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-yellow-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 focus:outline-none"
+                  aria-label="Toggle Dark Mode"
+               >
+                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+               </button>
+               <Button variant="primary" className="!px-6 !py-2.5 !h-10 !text-xs uppercase !tracking-wider">
+                 Get Started
+               </Button>
+            </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a key={link.name} href={link.href} className="text-sm font-medium text-gray-600 hover:text-[#00a1ff] transition-colors uppercase tracking-wider">
-                {link.name}
-              </a>
-            ))}
-            <Button variant="primary" className="!px-6 !py-2.5 !text-sm">
-              Get in Touch
-            </Button>
-          </div>
-
-          {/* Mobile Nav Toggle */}
-          <button className="md:hidden z-50 text-gray-900" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+            {/* Mobile Nav Toggle */}
+            <div className="flex items-center gap-4 md:hidden">
+              <button 
+                  onClick={toggleTheme}
+                  className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-yellow-300"
+               >
+                 {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+               </button>
+              <button className="z-50 text-gray-900 dark:text-white p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </nav>
         </div>
 
-        {/* Mobile Nav Menu */}
-        <div className={`fixed inset-0 bg-white z-40 flex flex-col items-center justify-center transition-transform duration-500 md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="flex flex-col items-center gap-8 text-xl">
+        {/* Mobile Menu Overlay */}
+        <div className={`fixed inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center transition-all duration-500 md:hidden ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+          <div className="flex flex-col items-center gap-8 text-2xl font-light">
             {navLinks.map((link) => (
-              <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="font-medium text-gray-900 hover:text-[#00a1ff]">
+              <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-gray-900 dark:text-white hover:text-[#00a1ff] transition-colors">
                 {link.name}
               </a>
             ))}
@@ -190,339 +226,333 @@ export default function GenXisLabsSite() {
             </Button>
           </div>
         </div>
-      </nav>
 
-      {/* --- Hero Section --- */}
-      <header id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        <ParticleNetwork />
-        <div className="container mx-auto px-6 md:px-12 relative z-10">
-          <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-[#00a1ff] text-sm font-medium mb-8 animate-fade-in">
-              <span className="flex h-2 w-2 relative justify-center items-center">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00a1ff] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00a1ff]"></span>
-              </span>
-              Leading the AI Revolution
-            </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-8">
-              Shaping Tomorrow Through <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00a1ff] to-[#00d6fb]">AI & Software</span> Innovation.
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl leading-relaxed">
-              GenXis Labs delivers cutting-edge software and artificial intelligence solutions that empower businesses to thrive in the digital age.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="primary">
-                Explore Solutions <ChevronRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button variant="outline">
-                Contact Our Team
-              </Button>
-            </div>
-          </div>
-        </div>
-        {/* Abstract shape for visual interest */}
-        <div className="absolute -right-64 top-1/4 w-[600px] h-[600px] bg-gradient-to-br from-cyan-100/40 to-blue-50/40 rounded-full blur-3xl -z-10"></div>
-      </header>
+        {/* --- Hero Section --- */}
+        <header id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#fafafa] dark:bg-[#0B1120] transition-colors duration-500">
+          <TechWaveBackground isDark={isDarkMode} />
+          
+          {/* Soft gradient orb for depth */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-[120px] pointer-events-none transition-colors duration-500" />
 
-      {/* --- About Section --- */}
-      <section id="about" className="py-24 md:py-32 bg-gray-50">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-              <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl relative z-10">
-                <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
-                  alt="GenXis Labs Team collaborating"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#00a1ff]/20 to-transparent mix-blend-overlay"></div>
+          <div className="container mx-auto px-6 md:px-12 relative z-10 pt-12">
+            <div className="max-w-5xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800/50 border border-blue-100 dark:border-blue-900 text-[#00a1ff] text-xs font-bold uppercase tracking-widest mb-10 shadow-sm animate-fade-in-up">
+                <span className="flex h-2 w-2 relative justify-center items-center">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00a1ff] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00a1ff]"></span>
+                </span>
+                AI & Software Innovation Lab
               </div>
-              {/* Decorative element */}
-              <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-gradient-to-tr from-[#00a1ff] to-[#00d6fb] rounded-3xl -z-0 opacity-20"></div>
-            </div>
-            <div>
-              <span className="text-[#00a1ff] font-semibold tracking-wider uppercase mb-4 block">About GenXis Labs</span>
-              <h2 className="text-4xl font-bold mb-8 leading-tight">We bridge the gap between <br/>human potential and artificial intelligence.</h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                At GenXis Labs, we are more than just developers; we are visionaries, researchers, and strategists dedicated to pushing the boundaries of what's possible.
+              
+              <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] mb-8 text-gray-900 dark:text-white transition-colors duration-500">
+                Shaping Tomorrow <br/>
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#00a1ff] via-[#00d6fb] to-[#00a1ff] pb-2">
+                   Through Intelligence.
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light transition-colors duration-500">
+                GenXis Labs engineers the bridge between human potential and artificial intelligence, building robust software for the modern enterprise.
               </p>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Founded on the principles of relentless innovation and customer-centricity, our R&D-focused approach ensures that every solution we build is not just current, but future-proof.
-              </p>
-              <div className="grid grid-cols-3 gap-6 mt-12">
-                <div>
-                  <h3 className="text-4xl font-bold text-[#00a1ff] mb-2">2+</h3>
-                  <p className="text-gray-600 font-medium">Projects Completed</p>
-                </div>
-                <div>
-                  <h3 className="text-4xl font-bold text-[#00a1ff] mb-2">3+</h3>
-                  <p className="text-gray-600 font-medium">Happy Clients</p>
-                </div>
-                <div>
-                  <h3 className="text-4xl font-bold text-[#00a1ff] mb-2">3</h3>
-                  <p className="text-gray-600 font-medium">Core Specializations</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- Services Section --- */}
-      <section id="services" className="py-24 md:py-32">
-        <div className="container mx-auto px-6 md:px-12">
-          <SectionHeading
-            badge="Our Expertise"
-            title="Intelligent Solutions for Modern Enterprises"
-            subtitle="Leverage our deep technical expertise to transform your operations and unlock new growth opportunities."
-          />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: <Brain size={32} />,
-                title: "AI & Machine Learning",
-                description: "Predictive analytics, NLP models, and computer vision systems tailored to your data."
-              },
-              {
-                icon: <Code size={32} />,
-                title: "Custom Software",
-                description: "Scalable, secure, and high-performance web and mobile applications built from scratch."
-              },
-              {
-                icon: <Cloud size={32} />,
-                title: "Cloud & Automation",
-                description: "Seamless cloud migration and intelligent process automation to reduce operational overhead."
-              },
-              {
-                icon: <LineChart size={32} />,
-                title: "IT Consulting & Strategy",
-                description: "Digital transformation roadmaps designed by industry veterans to guide your journey."
-              }
-            ].map((service, index) => (
-              <div key={index} className="group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div className="w-14 h-14 bg-blue-50 text-[#00a1ff] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-gradient-to-br group-hover:from-[#00a1ff] group-hover:to-[#00d6fb] group-hover:text-white transition-all duration-300">
-                  {service.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-4">{service.title}</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- Why Choose Us Section --- */}
-      <section id="why-us" className="py-24 md:py-32 bg-gray-900 text-white">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-            <div>
-              <span className="text-[#00d6fb] font-semibold tracking-wider uppercase mb-4 block">Why Choose Us</span>
-              <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">Harnessing AI for a <br/>Smarter Future</h2>
-              <p className="text-lg text-gray-300 mb-8 leading-relaxed">
-                Our mission is to revolutionize business operations by integrating cutting-edge AI with traditional engineering disciplines. We streamline manual tasks, empower human talent, and turn everyday challenges into opportunities for growth and innovation.
-              </p>
-              <Button variant="primary">
-                Learn About Our Mission
-              </Button>
-            </div>
-            <div className="relative h-[400px] rounded-3xl overflow-hidden">
-               <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80" alt="AI Future" className="w-full h-full object-cover opacity-50" />
-               <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/50 to-transparent"></div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-             <div className="bg-gray-800 p-8 rounded-3xl border border-gray-800 hover:border-[#00a1ff] transition-colors duration-300 group">
-                <div className="w-12 h-12 bg-gray-700/50 text-[#00d6fb] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#00a1ff] group-hover:text-white transition-all">
-                  <Users size={24} />
-                </div>
-                <h3 className="text-xl font-bold mb-4 text-white">Expert Team</h3>
-                <p className="text-gray-400 leading-relaxed">Highly skilled AI engineers, software developers, and supply chain experts ready to tackle your toughest challenges.</p>
-             </div>
-             <div className="bg-gray-800 p-8 rounded-3xl border border-gray-800 hover:border-[#00a1ff] transition-colors duration-300 group">
-                <div className="w-12 h-12 bg-gray-700/50 text-[#00d6fb] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#00a1ff] group-hover:text-white transition-all">
-                  <Award size={24} />
-                </div>
-                <h3 className="text-xl font-bold mb-4 text-white">Proven Results</h3>
-                <p className="text-gray-400 leading-relaxed">Measurable value delivery across multiple industries and business sectors, ensuring ROI on every initiative.</p>
-             </div>
-             <div className="bg-gray-800 p-8 rounded-3xl border border-gray-800 hover:border-[#00a1ff] transition-colors duration-300 group">
-                 <div className="w-12 h-12 bg-gray-700/50 text-[#00d6fb] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#00a1ff] group-hover:text-white transition-all">
-                   <Zap size={24} />
-                 </div>
-                 <h3 className="text-xl font-bold mb-4 text-white">Cutting-Edge Technology</h3>
-                 <p className="text-gray-400 leading-relaxed">Latest AI technologies and engineering solutions for maximum efficiency, keeping you ahead of the curve.</p>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- Testimonials Section --- */}
-      <section className="py-24 md:py-32 bg-blue-50 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-5">
-            <Brain size={600} className="mx-auto mt-20" />
-        </div>
-
-        <div className="container mx-auto px-6 md:px-12 relative z-10">
-          <div className="text-center mb-16">
-             <h2 className="text-3xl md:text-5xl font-bold mb-6">Trusted by Visionaries</h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                quote: "GenXis Labs didn't just build software; they engineered a competitive advantage for us. Their AI integration was seamless.",
-                author: "Sarah Jenkins",
-                role: "CTO, Nexus Financial"
-              },
-              {
-                quote: "The level of technical expertise and professionalism exhibited by the team is unmatched. They truly understand enterprise needs.",
-                author: "David Chen",
-                role: "Director of Operations, OmniLogistics"
-              },
-              {
-                quote: "From concept to deployment, the process was transparent and agile. The final product exceeded our wildest expectations.",
-                author: "Marcus Thorne",
-                role: "CEO, HealthVantage"
-              }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-white p-8 rounded-3xl shadow-sm relative">
-                <Quote size={40} className="text-blue-100 absolute top-8 right-8" />
-                <p className="text-gray-700 text-lg leading-relaxed mb-8 relative z-10">
-                  "{testimonial.quote}"
-                </p>
-                <div>
-                  <h4 className="font-bold text-lg">{testimonial.author}</h4>
-                  <p className="text-[#00a1ff]">{testimonial.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- Contact Section --- */}
-      <section id="contact" className="py-24 md:py-32">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid lg:grid-cols-2 gap-16">
-            <div>
-              <SectionHeading
-                badge="Connect with Us"
-                title="Ready to Innovate?"
-                subtitle="Tell us about your project challenges and let's explore how our technology can help you overcome them."
-              />
-              <div className="space-y-8 mt-12">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-[#00a1ff] shrink-0">
-                    <MapPin size={24} />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold mb-1">Headquarters</h4>
-                    <p className="text-gray-600">100 Innovation Drive, Suite 500<br/>San Francisco, CA 94105</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-[#00a1ff] shrink-0">
-                    <Mail size={24} />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold mb-1">Email Us</h4>
-                    <p className="text-gray-600">hello@genxislabs.com<br/>partners@genxislabs.com</p>
-                  </div>
-                </div>
-                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-[#00a1ff] shrink-0">
-                    <Phone size={24} />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold mb-1">Call Us</h4>
-                    <p className="text-gray-600">+1 (555) 123-4567<br/>Mon-Fri, 9am-6pm PST</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-8 md:p-12 rounded-3xl">
-              <h3 className="text-2xl font-bold mb-6">Send us a Message</h3>
-              <form className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input type="text" className="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-[#00a1ff] focus:ring-[#00a1ff] transition-colors" placeholder="John Doe" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                    <input type="email" className="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-[#00a1ff] focus:ring-[#00a1ff] transition-colors" placeholder="john@company.com" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                  <select className="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-[#00a1ff] focus:ring-[#00a1ff] transition-colors">
-                    <option>General Inquiry</option>
-                    <option>AI Solutions</option>
-                    <option>Software Development</option>
-                    <option>Partnership</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                  <textarea rows={4} className="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-[#00a1ff] focus:ring-[#00a1ff] transition-colors" placeholder="Tell us about your project..."></textarea>
-                </div>
-                <Button variant="primary" className="w-full">
-                  Send Message
+              
+              <div className="flex flex-col sm:flex-row gap-5 justify-center">
+                <Button variant="primary" className="!h-14 !px-10 !text-base shadow-blue-500/20">
+                  Explore Solutions <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
-              </form>
+                <Button variant="outline" className="!h-14 !px-10 !text-base bg-white/60 dark:bg-black/40 backdrop-blur-sm">
+                  Contact Our Team
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </header>
 
-      {/* --- Footer --- */}
-      <footer className="bg-gray-900 text-gray-400 py-16">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className="col-span-1 md:col-span-2">
-              <a href="#" className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#00a1ff] to-[#00d6fb] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">G</span>
+        {/* --- About Section --- */}
+        <section id="about" className="py-24 md:py-32 bg-white dark:bg-[#0B1120] relative transition-colors duration-500">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="grid lg:grid-cols-2 gap-20 items-center">
+              <div className="relative">
+                <div className="relative rounded-[2rem] overflow-hidden shadow-2xl dark:shadow-blue-900/10">
+                   <div className="absolute inset-0 bg-blue-900/10 mix-blend-multiply z-10"></div>
+                   <img
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
+                    alt="Team"
+                    className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-1000 ease-out"
+                  />
                 </div>
-                <span className="text-2xl font-bold text-white tracking-tight">GenXis<span className="text-[#00a1ff]">.</span>Labs</span>
-              </a>
-              <p className="text-lg max-w-sm mb-8">
-                Pioneering the future through intelligent software and AI innovations. Building tomorrow, today.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-6">Solutions</h4>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-[#00a1ff] transition-colors">AI & Machine Learning</a></li>
-                <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Custom Development</a></li>
-                <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Cloud Services</a></li>
-                <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Data Analytics</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-6">Company</h4>
-              <ul className="space-y-3">
-                <li><a href="#about" className="hover:text-[#00a1ff] transition-colors">About Us</a></li>
-                <li><a href="#why-us" className="hover:text-[#00a1ff] transition-colors">Why Us</a></li>
-                <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Careers</a></li>
-                <li><a href="#contact" className="hover:text-[#00a1ff] transition-colors">Contact</a></li>
-              </ul>
+                
+                {/* Floating Stat Card - Modern Glass Effect */}
+                <div className="absolute -bottom-10 -right-10 md:right-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl p-8 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-black/50 border border-white/20 dark:border-gray-700 z-20 max-w-xs animate-bounce-slow">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 text-[#00a1ff] rounded-2xl">
+                      <Award size={28} />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Experience</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">Excellence</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                    Delivering enterprise-grade solutions with a focus on scalability and security.
+                  </p>
+                </div>
+                
+                {/* Pattern Dots */}
+                <div className="absolute -top-12 -left-12 opacity-20 dark:opacity-10">
+                   <div className="w-48 h-48" style={{backgroundImage: `radial-gradient(${isDarkMode ? '#00d6fb' : '#00a1ff'} 2px, transparent 2px)`, backgroundSize: '24px 24px'}}></div>
+                </div>
+              </div>
+
+              <div>
+                <SectionHeading 
+                  align="left"
+                  badge="Who We Are"
+                  title="Engineering the Future of Business Operations"
+                  subtitle="We don't just write code; we architect systems that learn, adapt, and grow with your business."
+                />
+                
+                <div className="space-y-8">
+                  <div className="flex gap-6 group">
+                    <div className="mt-1 w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-[#00a1ff] flex-shrink-0 group-hover:bg-[#00a1ff] group-hover:text-white transition-colors duration-300">
+                      <span className="font-bold text-lg">01</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Research Driven</h3>
+                      <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Our labs are constantly exploring the bleeding edge of AI to bring you tested, proven innovations.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6 group">
+                    <div className="mt-1 w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-[#00a1ff] flex-shrink-0 group-hover:bg-[#00a1ff] group-hover:text-white transition-colors duration-300">
+                      <span className="font-bold text-lg">02</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Human Centric</h3>
+                      <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Technology should empower people. We design interfaces that are intuitive and enhance human capability.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-12 pt-12 border-t border-gray-100 dark:border-gray-800 grid grid-cols-3 gap-8">
+                  <div>
+                     <h4 className="text-4xl font-extrabold text-[#00a1ff] tracking-tight">2+</h4>
+                     <p className="text-sm text-gray-400 dark:text-gray-500 font-semibold uppercase mt-2 tracking-wider">Years R&D</p>
+                  </div>
+                  <div>
+                     <h4 className="text-4xl font-extrabold text-[#00a1ff] tracking-tight">15+</h4>
+                     <p className="text-sm text-gray-400 dark:text-gray-500 font-semibold uppercase mt-2 tracking-wider">Projects</p>
+                  </div>
+                  <div>
+                     <h4 className="text-4xl font-extrabold text-[#00a1ff] tracking-tight">100%</h4>
+                     <p className="text-sm text-gray-400 dark:text-gray-500 font-semibold uppercase mt-2 tracking-wider">Commitment</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-            <p>© {new Date().getFullYear()} GenXis Labs. All rights reserved.</p>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+        </section>
+
+        {/* --- Services Section --- */}
+        <section id="services" className="py-24 md:py-32 bg-gray-50 dark:bg-[#0F172A] transition-colors duration-500">
+          <div className="container mx-auto px-6 md:px-12">
+            <SectionHeading
+              badge="Our Capabilities"
+              title="Comprehensive Tech Solutions"
+              subtitle="From the cloud to the edge, we provide the full stack of services needed to modernize your enterprise."
+            />
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { icon: <Brain />, title: "AI & ML", desc: "Custom neural networks and predictive modeling." },
+                { icon: <Code />, title: "Software Dev", desc: "Full-cycle web and mobile application development." },
+                { icon: <Cloud />, title: "Cloud Ops", desc: "Scalable infrastructure and automated CI/CD pipelines." },
+                { icon: <LineChart />, title: "Strategy", desc: "Digital transformation consulting and roadmapping." }
+              ].map((s, i) => (
+                <div key={i} className="group relative bg-white dark:bg-gray-800/50 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 hover:border-[#00a1ff]/30 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center text-gray-900 dark:text-white mb-8 group-hover:bg-[#00a1ff] group-hover:text-white transition-all duration-300">
+                    {React.cloneElement(s.icon, { size: 32 })}
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{s.title}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+                    {s.desc}
+                  </p>
+                  <a href="#" className="inline-flex items-center text-sm font-bold text-[#00a1ff] group-hover:translate-x-2 transition-transform">
+                    Learn more <ArrowRight size={16} className="ml-2" />
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </footer>
+        </section>
+
+        {/* --- Why Choose Us (Dark Modern Gradient - Persists in Dark Mode) --- */}
+        <section id="why-us" className="py-24 md:py-32 bg-gray-900 relative overflow-hidden">
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-[#0a1929] to-gray-900 z-0"></div>
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00a1ff]/10 rounded-full blur-[100px] z-0 pointer-events-none"></div>
+
+          <div className="container mx-auto px-6 md:px-12 relative z-10">
+            <div className="grid lg:grid-cols-12 gap-16 items-center">
+              <div className="lg:col-span-5">
+                <span className="text-[#00d6fb] font-bold tracking-widest uppercase text-sm mb-4 block">Why GenXis Labs?</span>
+                <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-8 leading-tight tracking-tight">
+                  Harnessing AI for a <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d6fb] to-[#00a1ff]">Smarter Future</span>
+                </h2>
+                <p className="text-lg text-gray-400 mb-10 leading-relaxed font-light">
+                  Our mission is to revolutionize business operations by integrating cutting-edge AI with traditional engineering disciplines. We streamline manual tasks and turn challenges into opportunities.
+                </p>
+                <Button variant="primary" className="shadow-none ring-2 ring-white/10 hover:ring-[#00a1ff]">
+                  Read Our Mission
+                </Button>
+              </div>
+              
+              <div className="lg:col-span-7 grid md:grid-cols-2 gap-6">
+                 <div className="space-y-6 md:mt-12">
+                   <div className="bg-white/5 backdrop-blur-md p-8 rounded-[2rem] border border-white/10 hover:bg-white/10 transition-colors">
+                      <Users className="text-[#00d6fb] mb-6" size={40} />
+                      <h3 className="text-xl font-bold text-white mb-3">Expert Team</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">Highly skilled AI engineers and developers tackling the toughest challenges.</p>
+                   </div>
+                   <div className="bg-white/5 backdrop-blur-md p-8 rounded-[2rem] border border-white/10 hover:bg-white/10 transition-colors">
+                      <Award className="text-[#00d6fb] mb-6" size={40} />
+                      <h3 className="text-xl font-bold text-white mb-3">Proven Results</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">Measurable value delivery across multiple industries ensuring high ROI.</p>
+                   </div>
+                 </div>
+                 <div className="space-y-6">
+                   <div className="bg-gradient-to-br from-[#00a1ff] to-[#00d6fb] p-8 rounded-[2rem] shadow-xl text-white">
+                      <Zap className="text-white mb-6" size={40} />
+                      <h3 className="text-xl font-bold mb-3">Cutting-Edge Tech</h3>
+                      <p className="text-white/90 text-sm leading-relaxed">Latest engineering solutions for maximum efficiency and speed.</p>
+                   </div>
+                   <div className="bg-white/5 backdrop-blur-md p-8 rounded-[2rem] border border-white/10 hover:bg-white/10 transition-colors">
+                      <Quote className="text-[#00d6fb] mb-6" size={40} />
+                      <h3 className="text-xl font-bold text-white mb-3">Client Focused</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">Your success is our success. We build long-term partnerships.</p>
+                   </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Testimonials Section (Minimalist) --- */}
+        <section className="py-24 md:py-32 bg-white dark:bg-[#0B1120] relative overflow-hidden transition-colors duration-500">
+          <div className="container mx-auto px-6 md:px-12 relative z-10">
+            <SectionHeading title="Trusted by Visionaries" subtitle="We let our work—and our partners—speak for themselves." />
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { quote: "GenXis Labs didn't just build software; they engineered a competitive advantage for us.", author: "Sarah Jenkins", role: "CTO, Nexus Financial" },
+                { quote: "The level of technical expertise and professionalism exhibited by the team is unmatched.", author: "David Chen", role: "Ops Director, OmniLogistics" },
+                { quote: "From concept to deployment, the process was transparent, agile, and incredibly effective.", author: "Marcus Thorne", role: "CEO, HealthVantage" }
+              ].map((t, i) => (
+                <div key={i} className="bg-gray-50 dark:bg-gray-800/50 p-10 rounded-[2rem] hover:bg-white dark:hover:bg-gray-800 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-300 border border-transparent hover:border-gray-100 dark:hover:border-gray-700">
+                  <div className="flex gap-1 mb-6">
+                    {[1,2,3,4,5].map(star => <div key={star} className="w-2 h-2 rounded-full bg-[#00a1ff]"></div>)}
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-8 font-medium">"{t.quote}"</p>
+                  <div>
+                    <h4 className="font-bold text-gray-900 dark:text-white">{t.author}</h4>
+                    <p className="text-gray-400 dark:text-gray-500 text-sm">{t.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* --- Contact Section (Clean & Functional) --- */}
+        <section id="contact" className="py-24 md:py-32 bg-[#fafafa] dark:bg-[#0B1120] transition-colors duration-500">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl shadow-blue-900/5 dark:shadow-black/20 overflow-hidden border border-gray-100 dark:border-gray-700">
+              <div className="grid lg:grid-cols-2">
+                <div className="p-12 lg:p-16 bg-[#00a1ff] text-white relative overflow-hidden">
+                  <div className="relative z-10">
+                    <h3 className="text-3xl font-bold mb-6">Ready to start?</h3>
+                    <p className="text-blue-100 mb-12 text-lg">Tell us about your project challenges and let's explore how our technology can help.</p>
+                    
+                    <div className="space-y-8">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><MapPin size={20} /></div>
+                        <p>100 Innovation Drive, San Francisco, CA</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><Mail size={20} /></div>
+                        <p>hello@genxislabs.com</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><Phone size={20} /></div>
+                        <p>+1 (555) 123-4567</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Decoration */}
+                  <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+                </div>
+
+                <div className="p-12 lg:p-16">
+                  <form className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Name</label>
+                        <input type="text" className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-900 focus:border-[#00a1ff] focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none transition-all" placeholder="John Doe" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email</label>
+                        <input type="email" className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-900 focus:border-[#00a1ff] focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none transition-all" placeholder="john@company.com" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Message</label>
+                      <textarea rows={4} className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-900 focus:border-[#00a1ff] focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none transition-all" placeholder="How can we help?"></textarea>
+                    </div>
+                    <Button variant="primary" className="w-full">
+                      Send Message
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Footer --- */}
+        <footer className="bg-white dark:bg-[#0B1120] border-t border-gray-100 dark:border-gray-800 pt-20 pb-10 transition-colors duration-500">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="grid md:grid-cols-4 gap-12 mb-16">
+              <div className="col-span-1 md:col-span-2">
+                <a href="#" className="flex items-center gap-2 mb-6">
+                  <div className="w-8 h-8 bg-[#00a1ff] rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">G</span>
+                  </div>
+                  <span className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">GenXis<span className="text-[#00a1ff]">.</span>Labs</span>
+                </a>
+                <p className="text-gray-500 dark:text-gray-400 text-lg max-w-sm">
+                  Building the digital infrastructure for tomorrow's enterprises.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-6">Company</h4>
+                <ul className="space-y-4 text-gray-500 dark:text-gray-400">
+                  <li><a href="#" className="hover:text-[#00a1ff] transition-colors">About</a></li>
+                  <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Careers</a></li>
+                  <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Press</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-6">Legal</h4>
+                <ul className="space-y-4 text-gray-500 dark:text-gray-400">
+                  <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Privacy</a></li>
+                  <li><a href="#" className="hover:text-[#00a1ff] transition-colors">Terms</a></li>
+                </ul>
+              </div>
+            </div>
+            <div className="pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+              <p className="text-gray-400 dark:text-gray-500 text-sm">© 2024 GenXis Labs. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
