@@ -1,10 +1,15 @@
 import { useState } from 'react'
-import GenXisLabsSite from './GenXisLabsSite'
+import HomePage from './pages/HomePage'
+import TeamPage from './pages/TeamPage'
+import { Route, Routes } from 'react-router-dom'
 
 function App() {
   return (
     <>
-      <GenXisLabsSite />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="team" element={<TeamPage />} />
+      </Routes>
     </>
   )
 }
