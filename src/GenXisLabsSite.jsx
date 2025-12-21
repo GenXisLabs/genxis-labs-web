@@ -136,6 +136,15 @@ export default function GenXisLabsSite() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Updated: Toggles the 'dark' class on the main HTML element
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -148,7 +157,8 @@ export default function GenXisLabsSite() {
   ];
 
   return (
-    <div className={`${isDarkMode ? 'dark' : ''}`}>
+    // Updated: Removed the conditional wrapper div, now using a plain div as the class is on <html />
+    <div>
       <div className="min-h-screen bg-white dark:bg-[#0B1120] text-gray-900 dark:text-white font-sans selection:bg-[#00d6fb] selection:text-white overflow-x-hidden transition-colors duration-500">
 
         {/* --- Floating Modern Navigation --- */}
