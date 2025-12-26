@@ -1,7 +1,7 @@
 import React from 'react';
 import Reveal from './Reveal';
 import Button from './Button';
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import { GitBranch, Github, Linkedin, Twitter } from 'lucide-react';
 
 const Footer = () => {
     return (
@@ -34,9 +34,8 @@ const Footer = () => {
                         </p>
                         <div className="flex gap-4">
                             {/* Social Icons */}
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-[#00a1ff] hover:text-white transition-all"><Twitter size={18} /></a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-[#00a1ff] hover:text-white transition-all"><Linkedin size={18} /></a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-[#00a1ff] hover:text-white transition-all"><Github size={18} /></a>
+                            <a href="https://www.linkedin.com/company/106525429" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-[#00a1ff] hover:text-white transition-all"><Linkedin size={18} /></a>
+                            <a href="https://github.com/GenXisLabs" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-[#00a1ff] hover:text-white transition-all"><Github size={18} /></a>
                         </div>
                     </div>
 

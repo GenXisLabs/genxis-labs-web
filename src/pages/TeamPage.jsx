@@ -9,35 +9,35 @@ const teamMembers = [
   {
     id: 1,
     name: "Nilum Mudaliarachchi",
-    role: "Founder & AI and Robotics Eng",
+    role: "Founder",
     degree: "B.Sc.(Hons) Computer Science and Eng, UoM",
-    bio: "Pioneering researcher in swarm robotics with over 15 years of industry leadership.",
+    bio: "Pioneering researcher in swarm robotics with amazing leadership.",
     email: "nilum@genxis.lk",
     portfolio: "nilum.genxis.lk",
-    image: "team/nilum.jpeg",
-    social: { linkedin: "#", twitter: "#", github: "#" }
+    image: "team/nilumNew.jpg",
+    social: { linkedin: "https://www.linkedin.com/in/nilum2002/", github: "https://github.com/nilum2002" }
   },
   {
     id: 2,
     name: "Tharusha Udana",
-    role: "Founder & AI and Robotics Eng",
+    role: "Founder",
     degree: "B.Sc.(Hons) Artificial Intelligence, UoM",
     bio: "Expert in neural network architectures and predictive modeling for enterprise scale.",
     email: "tharusha@genxis.lk",
     portfolio: "tharusha.genxis.lk",
-    image: "team/tharusha.png",
-    social: { linkedin: "#", github: "#" }
+    image: "team/TharushaNew.jpg",
+    social: { linkedin: "https://www.linkedin.com/in/tharushaudana/", github: "https://github.com/tharushaudana" }
   },
   {
     id: 3,
     name: "Udul Dewmina",
     role: "Co-Founder & Software Eng",
     degree: "B.Sc.(Hons) in Electronics & Telecommunication Engineering, UoM",
-    bio: "Specializes in industrial automation and physical interface design for manufacturing.",
+    bio: "Specializes in industrial automation and Robotics interface design for manufacturing.",
     email: "udul@genxis.lk",
     portfolio: "udul.genxis.lk",
-    image: "team/udul.png",
-    social: { linkedin: "#", twitter: "#" }
+    image: "team/UdulNew.jpg",
+    social: { linkedin: "https://www.linkedin.com/in/udul-dewmina-29b166311/", github: "https://github.com/KUDewmina" }
   },
   {
     id: 4,
@@ -47,8 +47,8 @@ const teamMembers = [
     bio: "Full-stack architect focused on building scalable, secure cloud infrastructures.",
     email: "hiruna@genxis.lk",
     portfolio: "hiruna.genxis.lk",
-    image: "team/hiruna.png",
-    social: { linkedin: "#", github: "#" }
+    image: "team/hirunaNew.jpg",
+    social: { linkedin: "https://www.linkedin.com/in/hiruna-malavipathirana-b0904916a/", github: "https://github.com/Hirunahhm" }
   },
 ];
 
@@ -79,25 +79,25 @@ export default function TeamPage() {
       {/* --- Navigation --- */}
       <div className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ${scrolled ? 'py-4' : 'py-6'}`}>
         <nav className={`
-          flex items-center justify-between px-6 md:px-8 py-3 
+          grid grid-cols-3 items-center px-6 md:px-8 py-3 
           transition-all duration-500 ease-in-out
           ${scrolled 
             ? 'w-[95%] md:w-[85%] bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg shadow-black/5 rounded-full' 
             : 'w-full bg-transparent border-transparent'
           }
         `}>
-          <a href="/" className="flex items-center gap-2 z-10 group">
+          <a href="/" className="flex items-center gap-2 z-10 group justify-self-start">
              <img src="logo_with_text.png" alt="GenXis Labs" className="h-8 md:h-10" />
           </a>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-self-center">
              {/* Simple link back to home */}
              <a href="/" className="flex items-center text-sm font-medium text-gray-500 hover:text-[#00a1ff] transition-colors">
                <ArrowLeft size={16} className="mr-1" /> Back to Home
              </a>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-self-end">
              <button 
                 onClick={toggleTheme}
                 className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-yellow-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 focus:outline-none"
@@ -135,18 +135,17 @@ export default function TeamPage() {
       {/* --- Team Grid --- */}
       <section className="py-24 bg-white dark:bg-[#0B1120] transition-colors duration-500">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-12">
             {teamMembers.map((member, index) => (
               <Reveal key={member.id} delay={index * 100}>
                 <div className="group relative bg-gray-50 dark:bg-gray-800/40 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-[#00a1ff]/30 dark:hover:border-[#00a1ff]/30 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 flex flex-col h-full">
                   
                   {/* Image Container */}
                   <div className="aspect-[4/5] relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>
                     <img 
                       src={member.image} 
                       alt={member.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter grayscale group-hover:grayscale-0"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110  group-hover:grayscale-0"
                     />
                     
                     {/* Floating Role Badge */}
@@ -157,8 +156,6 @@ export default function TeamPage() {
 
                   {/* Content Container */}
                   <div className="p-8 relative flex-1 flex flex-col">
-                    {/* Overlap effect */}
-                    <div className="absolute -top-12 left-0 right-0 h-24 bg-gradient-to-t from-gray-50 dark:from-[#131b2e] to-transparent pointer-events-none"></div>
                     
                     <div className="relative z-10 flex-1 flex flex-col">
                       <h3 className="text-2xl font-bold mb-1 text-gray-900 dark:text-white">{member.name}</h3>
@@ -183,7 +180,7 @@ export default function TeamPage() {
                       <div className="mt-auto">
                         {/* Portfolio Button */}
                         <a 
-                          href={member.portfolio}
+                          href= "/"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center gap-2 w-full py-3 mb-6 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:border-[#00a1ff] hover:text-[#00a1ff] hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all duration-300 group/btn"

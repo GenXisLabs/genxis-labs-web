@@ -556,7 +556,7 @@ export default function HomePage() {
                       <div className="space-y-8">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><MapPin size={20} /></div>
-                          <p>100 Innovation Drive, San Francisco, CA</p>
+                          <p>Moratuwa , Colombo 10400, LK</p>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><Mail size={20} /></div>
@@ -564,7 +564,7 @@ export default function HomePage() {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><Phone size={20} /></div>
-                          <p>+1 (555) 123-4567</p>
+                          <p>+94 70 376 5390</p>
                         </div>
                       </div>
                     </div>
