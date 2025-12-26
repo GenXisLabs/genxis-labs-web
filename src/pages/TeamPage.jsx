@@ -126,7 +126,7 @@ export default function TeamPage() {
               The Architects of <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00a1ff] to-[#00d6fb]">Intelligence</span>
             </h1>
             <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              We are a collective of researchers, engineers, and visionaries united by a single mission: to build the future of robotics and AI.
+              We are a collective of researchers, engineers, and visionaries united by a single mission: to build the future of Robotics and AI.
             </p>
           </Reveal>
         </div>
