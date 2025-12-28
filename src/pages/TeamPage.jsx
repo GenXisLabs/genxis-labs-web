@@ -14,7 +14,7 @@ const teamMembers = [
     bio: "Pioneering researcher in swarm robotics with amazing leadership.",
     email: "nilum@genxis.lk",
     portfolio: "nilum.genxis.lk",
-    image: "team/nilumNew.jpg",
+    image: "team_imgs/nilumNew.jpg",
     social: { linkedin: "https://www.linkedin.com/in/nilum2002/", github: "https://github.com/nilum2002" }
   },
   {
@@ -25,7 +25,7 @@ const teamMembers = [
     bio: "Expert in neural network architectures and predictive modeling for enterprise scale.",
     email: "tharusha@genxis.lk",
     portfolio: "tharusha.genxis.lk",
-    image: "team/TharushaNew.jpg",
+    image: "team_imgs/TharushaNew.jpg",
     social: { linkedin: "https://www.linkedin.com/in/tharushaudana/", github: "https://github.com/tharushaudana" }
   },
   {
@@ -36,7 +36,7 @@ const teamMembers = [
     bio: "Specializes in industrial automation and Robotics interface design for manufacturing.",
     email: "udul@genxis.lk",
     portfolio: "udul.genxis.lk",
-    image: "team/UdulNew.jpg",
+    image: "team_imgs/UdulNew.jpg",
     social: { linkedin: "https://www.linkedin.com/in/udul-dewmina-29b166311/", github: "https://github.com/KUDewmina" }
   },
   {
@@ -47,7 +47,7 @@ const teamMembers = [
     bio: "Full-stack architect focused on building scalable, secure cloud infrastructures.",
     email: "hiruna@genxis.lk",
     portfolio: "hiruna.genxis.lk",
-    image: "team/hirunaNew.jpg",
+    image: "team_imgs/hirunaNew.jpg",
     social: { linkedin: "https://www.linkedin.com/in/hiruna-malavipathirana-b0904916a/", github: "https://github.com/Hirunahhm" }
   },
 ];
