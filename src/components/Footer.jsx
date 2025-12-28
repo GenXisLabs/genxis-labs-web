@@ -27,7 +27,7 @@ const Footer = () => {
                 <Reveal delay={200} className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                     <div className="col-span-1 lg:col-span-1">
                         <a href="/" className="flex items-center gap-2 mb-6" onClick={(e) => handleScrollToSection(e, '#home')}>
-                            <img src="logo_with_text.png" alt="GenXis Labs Logo" className="h-8 md:h-10 transform group-hover:scale-105 transition-transform duration-300" />
+                            <img src="/logo_with_text.png" alt="GenXis Labs Logo" className="h-8 md:h-10 transform group-hover:scale-105 transition-transform duration-300" />
                         </a>
                         <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6">
                             GenXis Labs is a pioneering technology research firm dedicated to bridging human potential with artificial intelligence and advanced robotics.
