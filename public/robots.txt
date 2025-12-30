@@ -1,0 +1,19 @@
+# GenXis Labs Robots.txt
+# https://genxis.lk
+
+User-agent: *
+Allow: /
+
+# Block specific internal paths if they exist on the main domain
+Disallow: /admin/
+Disallow: /api/
+Disallow: /webmail/
+Disallow: /private/
+Disallow: /dashboard/
+
+# Block AI Scrapers (Optional but recommended for R&D)
+User-agent: GPTBot
+Disallow: /
+
+# Sitemap Location
+Sitemap: https://genxis.lk/sitemap.xml
