@@ -560,7 +560,7 @@ export default function HomePage() {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><Mail size={20} /></div>
-                          <p>hello@genxislabs.com</p>
+                          <p>hello@genxis.lk</p>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm"><Phone size={20} /></div>
